@@ -1,0 +1,67 @@
+module TB_Decoder;
+reg [31:0] instruction;
+wire [15:0] i;
+wire [4:0] shift_ror;
+wire [3:0] src_reg1, src_reg2, dest_reg;
+wire Sbit;
+wire [3:0] OPcode, cond;
+wire [31:0] Source;
+reg [15:0] enable;
+reg [31:0] DataReg;
+reg [31:0] R0, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15;
+wire [31:0] r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15; 
+
+
+initial
+begin
+$display($time, " Test");
+
+#5 instruction = 32'b00001001010100111011010000100000;
+//0110
+
+
+$monitor($time, " cond=%b, OPcode=%b, Sbit=%b, dest_reg=%b, src_reg2=%b, src_reg1=%b, shift_ror=%b, i=%b", cond, OPcode, Sbit, dest_reg, src_reg2, src_reg1, shift_ror, i);
+end
+instruction_decoder decoder(instruction, i, shift_ror, src_reg1, src_reg2, dest_reg, Sbit, OPcode, cond);
+
+initial
+begin
+$display($time, " Test");
+//r0=0; r1=0; R2=0; R3=0; R4=0; R5=0; R6=0; R7=0; R8=0; R9=0; R10=0; R11=0; R12=0; R13=0; R14=0; R15=0;
+#10 enable = 16'b100; R0=0; R1=0; R2=0; R3=0; R4=0; R5=0; R6=0; R7=0; R8=0; R9=0; R10=0; R11=0; R12=0; R13=0; R14=0; R15=0; DataReg = 31'b0011;
+
+$monitor($time, "R0=%b, R1 = %b, R2=%b, R3=%b, R4=%b, R5=%b, R6 = %b, R7=%b, R8=%b, R9=%b, R10 = %b, R11=%b, R12=%b, R13=%b, R14=%b, R15 = %b", R0, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15);
+
+end
+assign R0=r0;
+assign R1=r1;
+assign R2=r2;
+assign R3=r3;
+assign R4=r4;
+assign R5=r5;
+assign R6=r6;
+assign R7=r7;
+assign R8=r8;
+assign R9=r9;
+assign R10=r10;
+assign R11=r11;
+assign R12=r12;
+assign R13=r13;
+assign R14=r14;
+assign R15=r15;
+
+
+registerbank regbank(enable, r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, DataReg);
+
+initial
+begin
+
+#15 R0=0; R1=0; R2=0; R3=0; R4=0; R5=5; R6=6; R7=7; R8=0; R9=0; R10=0; R11=0; R12=0; R13=0; R14=0; R15=0;
+
+
+$monitor($time, "Source = %b", Source);
+
+end
+thirtytwo_bit_sixteen_to_one_MUX mux(src_reg1, Source, R0, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15);
+
+endmodule
